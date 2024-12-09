@@ -68,7 +68,7 @@ class Character(db.Model):
     eye_color = db.Column(db.String(50),unique=False, nullable=False)
     birth_year = db.Column(db.String(200), unique=False, nullable=False)
     gender = db.Column(db.String(50),unique=False, nullable=False)
-    planet_id = db.Column(db.Interger, db.ForeignKey("planet.id"), nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"), nullable=False)
     films = db.Column(db.String(50),unique=False, nullable=False)
     url = db.Column(db.String(50),unique=False, nullable=False)
     planet = db.relationship(Planet)
@@ -97,9 +97,9 @@ class Character(db.Model):
 
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Interger, db.ForeignKey("user.id"), nullable=False)
-    planet_id = db.Column(db.Interger, db.ForeignKey("planet.id"), nullable=False)
-    character_id = db.Column(db.Interger, db.ForeignKey("character.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"), nullable=False)
+    character_id = db.Column(db.Integer, db.ForeignKey("character.id"), nullable=False)
     user = db.relationship(User)
     planet = db.relationship(Planet)
     character = db.relationship(Character)
