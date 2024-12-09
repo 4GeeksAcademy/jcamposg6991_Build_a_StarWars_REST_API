@@ -103,8 +103,6 @@ class Favorite(db.Model):
     user = db.relationship(User)
     planet = db.relationship(Planet)
     character = db.relationship(Character)
-    
-  
 
     def __repr__(self):
         return '<Favorite %r>' % self.id
