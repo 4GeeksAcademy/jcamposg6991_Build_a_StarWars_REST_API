@@ -37,13 +37,18 @@ def sitemap():
     return generate_sitemap(app)
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+def get_users():
 
-    return jsonify(response_body), 200
+    try:
+        users = User.query.all()
+        if len(users) < 1:
+            return jsonify({"msg": "Not found"}),404
+        serializaed_users = list(map(lambda x: x.serialize(), users))
+        return serializaed_users, 200
+    except Exception as e:
+        return jsonify({"msg":"Server error", "error": str(e)}),500
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
