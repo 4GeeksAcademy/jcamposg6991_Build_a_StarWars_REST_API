@@ -47,8 +47,8 @@ def get_users():
         users = User.query.all()
         if len(users) < 1:
             return jsonify({"msg": "Not found"}),404
-        serializaed_users = list(map(lambda x: x.serialize(), users))
-        return serializaed_users, 200
+        serialized_users = list(map(lambda x: x.serialize(), users))
+        return serialized_users, 200
     except Exception as e:
         return jsonify({"msg":"Server error", "error": str(e)}),500
     
@@ -60,8 +60,8 @@ def get_user(user_id):
         if user is None:
             return jsonify ({"msg": f"user {user_id} not found"}),404
         
-        serialized_user = user.serialized()
-        return serialized_user, 200
+        serialized_user = user.serialize()
+        return jsonify(serialized_user), 200
     except Exception as e:
         return jsonify ({"msg":"Server error", "error": str(e)}),500   
 
@@ -92,8 +92,8 @@ def get_planets():
         planets = Planet.query.all()
         if len(planets) < 1:
             return jsonify({"msg": "Not found"}),404
-        serializaed_planets = list(map(lambda x: x.serialize(), planets))
-        return serializaed_planets, 200
+        serialized_planets = list(map(lambda x: x.serialize(), planets))
+        return serialized_planets, 200
     except Exception as e:
         return jsonify({"msg":"Server error", "error": str(e)}),500
     
@@ -105,8 +105,8 @@ def get_planet(planet_id):
         if planet is None:
             return jsonify ({"msg": f"planet {planet_id} not found"}),404
         
-        serialized_planet = planet.serialized()
-        return serialized_planet, 200
+        serialized_planet = planet.serialize()
+        return jsonify(serialized_planet), 200
     except Exception as e:
         return jsonify ({"msg":"Server error", "error": str(e)}),500   
 
@@ -149,8 +149,8 @@ def get_characters():
         characters = Character.query.all()
         if len(characters) < 1:
             return jsonify({"msg": "Not found"}),404
-        serializaed_characters = list(map(lambda x: x.serialize(), characters))
-        return serializaed_characters, 200
+        serialized_characters = list(map(lambda x: x.serialize(), characters))
+        return serialized_characters, 200
     except Exception as e:
         return jsonify({"msg":"Server error", "error": str(e)}),500
     
@@ -162,8 +162,8 @@ def get_charactert(character_id):
         if character is None:
             return jsonify ({"msg": f"character {character_id} not found"}),404
         
-        serialized_character = character.serialized()
-        return serialized_character, 200
+        serialized_character = character.serialize()
+        return jsonify(serialized_character), 200
     except Exception as e:
         return jsonify ({"msg":"Server error", "error": str(e)}),500   
 
@@ -205,8 +205,8 @@ def get_favorites():
         favorites = Favorite.query.all()
         if len(favorites) < 1:
             return jsonify({"msg": "Not found"}),404
-        serializaed_favorites = list(map(lambda x: x.serialize(), favorites))
-        return serializaed_favorites, 200
+        serialized_favorites = list(map(lambda x: x.serialize(), favorites))
+        return serialized_favorites, 200
     except Exception as e:
         return jsonify({"msg":"Server error", "error": str(e)}),500
     
