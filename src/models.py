@@ -89,7 +89,6 @@ class Character(db.Model):
             "birth_year": self.birth_year,
             "gender": self.gender,
             "planet_id": self.planet_id,
-            "residents": self.residents,
             "films": self.films,
             "url": self.url,
         }

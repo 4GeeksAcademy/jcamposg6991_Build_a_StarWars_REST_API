@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planet, Character
+from models import db, User, Planet, Character, Favorite
 #from models import Person
 
 app = Flask(__name__)
@@ -189,6 +189,53 @@ def create_character():
         db.session.add(new_character)
         db.session.commit()
         return jsonify({"msg":"character creadeted successfully"}),200
+    except Exception as e:
+        return jsonify({"msg":"Server error","error": str(e)}),500
+
+
+
+#------------------------------------------------
+#FAVORITOS
+#------------------------------------------------
+
+#Traer todos los favoritos
+@app.route('/favorite', methods = ['GET'])
+def get_favorites():
+    try:
+        favorites = Favorite.query.all()
+        if len(favorites) < 1:
+            return jsonify({"msg": "Not found"}),404
+        serializaed_favorites = list(map(lambda x: x.serialize(), favorites))
+        return serializaed_favorites, 200
+    except Exception as e:
+        return jsonify({"msg":"Server error", "error": str(e)}),500
+    
+#Traer un favorito
+@app.route("/favorite/<int:favorite_id>", methods = ["GET"])
+def get_favorite(favorite_id):
+    try:
+        favorite = Favorite.query.get(favorite_id)
+        if favorite is None:
+            return jsonify ({"msg": f"favorite {favorite_id} not found"}),404
+        
+        serialized_favorite = favorite.serialized()
+        return serialized_favorite, 200
+    except Exception as e:
+        return jsonify ({"msg":"Server error", "error": str(e)}),500   
+
+#Crear un favorito
+@app.route("/favorite", methods = ["POST"])
+def create_favorite():
+    try:
+        body = json.loads(request.data)
+        new_favorite = Favorite(
+            user_id = body["user_id"],
+            planet_id = body["planet_id"],
+            character_id = body["character_id"],
+        )
+        db.session.add(new_favorite)
+        db.session.commit()
+        return jsonify({"msg":"favorite creadeted successfully"}),200
     except Exception as e:
         return jsonify({"msg":"Server error","error": str(e)}),500
 
