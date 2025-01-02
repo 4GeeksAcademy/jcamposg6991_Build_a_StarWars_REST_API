@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Planet
 #from models import Person
 
 app = Flask(__name__)
@@ -36,6 +36,9 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+#------------------------------------------------
+#USUARIOS
+#------------------------------------------------
 
 #Traer todos los usuarios
 @app.route('/user', methods = ['GET'])
@@ -60,8 +63,7 @@ def get_user(user_id):
         serialized_user = user.serialized()
         return serialized_user, 200
     except Exception as e:
-        return jsonify ({"msg":"Server error", "error": str(e)}),500
-    
+        return jsonify ({"msg":"Server error", "error": str(e)}),500   
 
 #Crear un usuario
 @app.route("/user", methods = ["POST"])
@@ -78,6 +80,63 @@ def create_user():
         return jsonify({"msg":"user creadeted successfully"}),200
     except Exception as e:
         return jsonify({"msg":"Server error","error": str(e)}),500
+
+#------------------------------------------------
+#PLANETAS
+#------------------------------------------------
+
+#Traer todos los planetas
+@app.route('/planet', methods = ['GET'])
+def get_planets():
+    try:
+        planets = Planet.query.all()
+        if len(planets) < 1:
+            return jsonify({"msg": "Not found"}),404
+        serializaed_planets = list(map(lambda x: x.serialize(), planets))
+        return serializaed_planets, 200
+    except Exception as e:
+        return jsonify({"msg":"Server error", "error": str(e)}),500
+    
+#Traer un planeta
+@app.route("/planet/<int:planet_id>", methods = ["GET"])
+def get_planet(planet_id):
+    try:
+        planet = Planet.query.get(planet_id)
+        if planet is None:
+            return jsonify ({"msg": f"planet {planet_id} not found"}),404
+        
+        serialized_planet = planet.serialized()
+        return serialized_planet, 200
+    except Exception as e:
+        return jsonify ({"msg":"Server error", "error": str(e)}),500   
+
+#Crear un planeta
+@app.route("/planet", methods = ["POST"])
+def create_planet():
+    try:
+        body = json.loads(request.data)
+        new_planet = Planet(
+
+            name = body["name"],
+            diameter = body["diameter"],
+            rotation_period = body["rotation_period"],
+            orbital_period = body["orbital_period"],
+            gravity = body["gravity"],
+            population = body["population"],
+            climate = body["climate"],
+            terrain = body["terrain"],
+            surface_water = body["surface_water"],
+            residents = body["residents"],
+            films = body["films"],
+            url = body["url"]
+        )
+        db.session.add(new_planet)
+        db.session.commit()
+        return jsonify({"msg":"planet creadeted successfully"}),200
+    except Exception as e:
+        return jsonify({"msg":"Server error","error": str(e)}),500
+
+
 
 
 # this only runs if `$ python src/app.py` is executed
