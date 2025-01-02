@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planet
+from models import db, User, Planet, Character
 #from models import Person
 
 app = Flask(__name__)
@@ -133,6 +133,62 @@ def create_planet():
         db.session.add(new_planet)
         db.session.commit()
         return jsonify({"msg":"planet creadeted successfully"}),200
+    except Exception as e:
+        return jsonify({"msg":"Server error","error": str(e)}),500
+    
+
+
+#------------------------------------------------
+#PERSONAJES
+#------------------------------------------------
+
+#Traer todos los personajes
+@app.route('/character', methods = ['GET'])
+def get_characters():
+    try:
+        characters = Character.query.all()
+        if len(characters) < 1:
+            return jsonify({"msg": "Not found"}),404
+        serializaed_characters = list(map(lambda x: x.serialize(), characters))
+        return serializaed_characters, 200
+    except Exception as e:
+        return jsonify({"msg":"Server error", "error": str(e)}),500
+    
+#Traer un personaje
+@app.route("/character/<int:character_id>", methods = ["GET"])
+def get_charactert(character_id):
+    try:
+        character = Character.query.get(character_id)
+        if character is None:
+            return jsonify ({"msg": f"character {character_id} not found"}),404
+        
+        serialized_character = character.serialized()
+        return serialized_character, 200
+    except Exception as e:
+        return jsonify ({"msg":"Server error", "error": str(e)}),500   
+
+#Crear un personaje
+@app.route("/character", methods = ["POST"])
+def create_character():
+    try:
+        body = json.loads(request.data)
+        new_character = Character(
+
+            name = body["name"],
+            height = body["height"],
+            mass = body["mass"],
+            hair_color = body["hair_color"],
+            skin_color = body["skin_color"],
+            eye_color = body["eye_color"],
+            birth_year = body["birth_year"],
+            gender = body["gender"],
+            planet_id = body["planet_id"],
+            films = body["films"],
+            url = body["url"]
+        )
+        db.session.add(new_character)
+        db.session.commit()
+        return jsonify({"msg":"character creadeted successfully"}),200
     except Exception as e:
         return jsonify({"msg":"Server error","error": str(e)}),500
 
