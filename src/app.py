@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planet, Character, Favorite
+from models import db, User, Planet, People, Favorite
 #from models import Person
 
 app = Flask(__name__)
@@ -41,7 +41,7 @@ def sitemap():
 #------------------------------------------------
 
 #Traer todos los usuarios
-@app.route('/user', methods = ['GET'])
+@app.route('/users', methods = ['GET'])
 def get_users():
     try:
         users = User.query.all()
@@ -53,7 +53,7 @@ def get_users():
         return jsonify({"msg":"Server error", "error": str(e)}),500
     
 #Traer un usuario
-@app.route("/user/<int:user_id>", methods = ["GET"])
+@app.route("/users/<int:user_id>", methods = ["GET"])
 def get_user(user_id):
     try:
         user = User.query.get(user_id)
@@ -66,7 +66,7 @@ def get_user(user_id):
         return jsonify ({"msg":"Server error", "error": str(e)}),500   
 
 #Crear un usuario
-@app.route("/user", methods = ["POST"])
+@app.route("/users", methods = ["POST"])
 def create_user():
     try:
         body = json.loads(request.data)
@@ -86,7 +86,7 @@ def create_user():
 #------------------------------------------------
 
 #Traer todos los planetas
-@app.route('/planet', methods = ['GET'])
+@app.route('/planets', methods = ['GET'])
 def get_planets():
     try:
         planets = Planet.query.all()
@@ -98,7 +98,7 @@ def get_planets():
         return jsonify({"msg":"Server error", "error": str(e)}),500
     
 #Traer un planeta
-@app.route("/planet/<int:planet_id>", methods = ["GET"])
+@app.route("/planets/<int:planet_id>", methods = ["GET"])
 def get_planet(planet_id):
     try:
         planet = Planet.query.get(planet_id)
@@ -111,7 +111,7 @@ def get_planet(planet_id):
         return jsonify ({"msg":"Server error", "error": str(e)}),500   
 
 #Crear un planeta
-@app.route("/planet", methods = ["POST"])
+@app.route("/planets", methods = ["POST"])
 def create_planet():
     try:
         body = json.loads(request.data)
@@ -143,36 +143,36 @@ def create_planet():
 #------------------------------------------------
 
 #Traer todos los personajes
-@app.route('/character', methods = ['GET'])
-def get_characters():
+@app.route('/people', methods = ['GET'])
+def get_people():
     try:
-        characters = Character.query.all()
-        if len(characters) < 1:
+        people = People.query.all()
+        if len(people) < 1:
             return jsonify({"msg": "Not found"}),404
-        serialized_characters = list(map(lambda x: x.serialize(), characters))
-        return serialized_characters, 200
+        serialized_people = list(map(lambda x: x.serialize(), people))
+        return serialized_people, 200
     except Exception as e:
         return jsonify({"msg":"Server error", "error": str(e)}),500
     
 #Traer un personaje
-@app.route("/character/<int:character_id>", methods = ["GET"])
-def get_charactert(character_id):
+@app.route("/people/<int:people_id>", methods = ["GET"])
+def get_people(people_id):
     try:
-        character = Character.query.get(character_id)
-        if character is None:
-            return jsonify ({"msg": f"character {character_id} not found"}),404
+        people = People.query.get(people_id)
+        if people is None:
+            return jsonify ({"msg": f"character {people_id} not found"}),404
         
-        serialized_character = character.serialize()
-        return jsonify(serialized_character), 200
+        serialized_people = people.serialize()
+        return jsonify(serialized_people), 200
     except Exception as e:
         return jsonify ({"msg":"Server error", "error": str(e)}),500   
 
 #Crear un personaje
-@app.route("/character", methods = ["POST"])
-def create_character():
+@app.route("/people", methods = ["POST"])
+def create_people():
     try:
         body = json.loads(request.data)
-        new_character = Character(
+        new_people = People(
 
             name = body["name"],
             height = body["height"],
@@ -186,7 +186,7 @@ def create_character():
             films = body["films"],
             url = body["url"]
         )
-        db.session.add(new_character)
+        db.session.add(new_people)
         db.session.commit()
         return jsonify({"msg":"character creadeted successfully"}),200
     except Exception as e:
@@ -238,6 +238,19 @@ def create_favorite():
         return jsonify({"msg":"favorite creadeted successfully"}),200
     except Exception as e:
         return jsonify({"msg":"Server error","error": str(e)}),500
+
+#Traer favoritos por user
+@app.route('/user/<int:user_id>/favorite', methods=['GET'])
+def get_user_favorites(user_id):
+    try:
+        favorites = Favorite.query.filter_by(user_id=user_id).all()
+        if not favorites:
+            return jsonify({"msg": f"No favorites found for user {user_id}"}), 404
+
+        serialized_favorites = [favorite.serialize() for favorite in favorites]
+        return jsonify(serialized_favorites), 200
+    except Exception as e:
+        return jsonify({"msg": "Server error", "error": str(e)}), 500
 
 
 

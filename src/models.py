@@ -58,7 +58,7 @@ class Planet(db.Model):
         }
 
 
-class Character(db.Model):
+class People(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
     height = db.Column(db.String(50),unique=False, nullable=False)
