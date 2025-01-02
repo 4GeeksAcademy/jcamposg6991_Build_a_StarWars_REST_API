@@ -58,7 +58,7 @@ class Planet(db.Model):
         }
 
 
-class People(db.Model):
+class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
     height = db.Column(db.String(50),unique=False, nullable=False)
@@ -98,10 +98,10 @@ class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"), nullable=False)
-    people_id = db.Column(db.Integer, db.ForeignKey("people.id"), nullable=False)
+    character_id = db.Column(db.Integer, db.ForeignKey("character.id"), nullable=False)
     user = db.relationship(User)
     planet = db.relationship(Planet)
-    people = db.relationship(People)
+    character = db.relationship(Character)
 
     def __repr__(self):
         return '<Favorite %r>' % self.id
@@ -111,7 +111,7 @@ class Favorite(db.Model):
             "id": self.id,
             "user_id": self.user_id,
             "planet_id": self.planet_id,
-            "people_id": self.people_id,
+            "character_id": self.character_id,
 
         }
 
