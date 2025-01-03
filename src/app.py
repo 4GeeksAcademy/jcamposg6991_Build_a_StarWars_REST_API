@@ -253,6 +253,28 @@ def get_user_favorites(user_id):
         return jsonify({"msg": "Server error", "error": str(e)}), 500
 
 
+#Crear un planeta favorito para un usuario
+@app.route("/favorite/planet/<int:planet_id>", methods=["POST"])
+def add_favorite_planet(planet_id):
+    try:
+        body = request.json
+        user_id = body.get("user_id")
+        if not user_id:
+            return jsonify({"msg": "User ID is required"}), 400
+
+        planet = Planet.query.get(planet_id)
+        if not planet:
+            return jsonify({"msg": f"Planet with ID {planet_id} not found"}), 404
+
+        new_favorite = Favorite(user_id=user_id, planet_id=planet_id)
+
+        db.session.add(new_favorite)
+        db.session.commit()
+
+        return jsonify({"msg": f"Planet {planet_id} added to favorites for User {user_id}"})
+    except Exception as e:
+        return jsonify({"msg": "Server error", "error": str(e)}), 500
+
 
 
 # this only runs if `$ python src/app.py` is executed
