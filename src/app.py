@@ -296,6 +296,26 @@ def add_favorite_people(people_id):
         return jsonify({"msg": f"People {people_id} added to favorites for User {user_id}"})
     except Exception as e:
         return jsonify({"msg": "Server error", "error": str(e)}), 500
+    
+#Borrar un planeta favorito de un usuario
+@app.route("/favorite/planet/<int:planet_id>", methods=["DELETE"])
+def delete_favorite_planet(planet_id):
+    try:
+        body = request.json
+        user_id = body.get("user_id")
+        if not user_id:
+            return jsonify({"msg": "User ID is required"}), 400
+
+        favorite = Favorite.query.filter_by(user_id=user_id, planet_id=planet_id).first()
+        if not favorite:
+            return jsonify({"msg": f"Favorite planet with ID {planet_id} not found"}), 404
+
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({"msg": f"Planet {planet_id} removed from favorites for User {user_id}"})
+    except Exception as e:
+        return jsonify({"msg": "Server error", "error": str(e)}), 500
+
 
 
 
